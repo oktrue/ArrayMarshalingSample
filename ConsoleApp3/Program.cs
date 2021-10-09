@@ -5,7 +5,7 @@ namespace ConsoleApp3
     public class Program
     {
         [DllImport("TransformationEstimation")]
-        private static extern void EstimateTransformation([In, Out] float[,] points, int count);
+        private static extern void EstimateTransformation([In, Out] float[,] points, int count, float tolerance = 10.0f);
 
         public static void Main(string[] args)
         {
@@ -22,7 +22,7 @@ namespace ConsoleApp3
                 {
                     { 64.044304f, 2693.0754f, -170.95724f },
                     { 4242.071f, 3637.872f, -194.96318f },
-                    { 4242.071f, 3637.872f, -194.96318f }
+                    { 4917.587f, 1063.1492f, 863.1775f }
                 };
 
             EstimateTransformation(src, src.GetLength(0));
