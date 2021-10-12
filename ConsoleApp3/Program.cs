@@ -5,7 +5,7 @@ namespace ConsoleApp3
     public class Program
     {
         [DllImport("TransformationEstimation")]
-        private static extern IntPtr EstimateTransformation([In] float[,] points, int count, [Out] float[] transformation, float tolerance = 10.0f);
+        private static extern void EstimateTransformation(float[,] points, int count, float[] transformation, float tolerance = 10.0f);
 
         public static void Main(string[] args)
         {
@@ -18,7 +18,10 @@ namespace ConsoleApp3
 
             var transformation = new float[6];
 
-            EstimateTransformation(src, src.GetLength(0), transformation);
+            for (int i = 0; i < 100; i++)
+            {
+                EstimateTransformation(src, src.GetLength(0), transformation);
+            }
 
             Console.ReadKey();
         }
