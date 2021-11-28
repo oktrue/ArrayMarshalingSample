@@ -6,6 +6,35 @@ namespace ConsoleApp3
     public class Program
     {
         /// <summary>
+        /// Преобразование трёх точек в матрицу поворота
+        /// https://math.stackexchange.com/questions/1983054/using-3-points-create-new-coordinate-system-and-create-array-of-points-on-xy
+        /// </summary>
+        /// <param name="a">Задняя точка</param>
+        /// <param name="b">Передняя точка</param>
+        /// <param name="c">Верхняя точка</param>
+        /// <returns>Матрица поворота</returns>
+        public static Matrix4x4 ConvertThreePointsToRotationMatrix(Vector3 a, Vector3 b, Vector3 c)
+        {
+            // Базисный вектор X
+            var d = Vector3.Normalize(b - a);
+            var unitX = d / Vector3.Dot(d, d);
+
+            // Базисный вектор Y
+            var cross = Vector3.Cross(unitX, Vector3.Normalize(a - c));
+            var unitY = cross / Vector3.Dot(cross, cross);
+
+            // Базисный вектор Z
+            var unitZ = Vector3.Cross(unitX, unitY);
+
+            // Матрица поворота
+            return new Matrix4x4(
+                unitX.X, unitX.Y, unitX.Z, 0,
+                unitY.X, unitY.Y, unitY.Z, 0,
+                unitZ.X, unitZ.Y, unitZ.Z, 0,
+                0, 0, 0, 1);
+        }
+
+        /// <summary>
         /// Преобразование координат из локальной СК в глобальную
         /// </summary>
         private static Func<Vector3, float[], Vector3> TransformCoordinates = (coordinates, transformation) =>
@@ -57,6 +86,27 @@ namespace ConsoleApp3
 
             // Здесь получается точка 3 с правого тахеометра в СК левого тахеометра, то есть transformedPt = tgt[0] чтд.
             var transformedPt = TransformCoordinates(new Vector3(src[0, 0], src[0, 1], src[0, 2]), transformation);
+
+            // Тесты
+            var p1 = new Vector3(-1, -1, 0);
+            var p2 = new Vector3(1, 1, 0); 
+            var p3 = new Vector3(1, -1, MathF.Sqrt(2));
+
+            var r = ConvertThreePointsToRotationMatrix(p1, p2, p3);
+
+            var euler = r.ToEulerAngles();
+
+            // Поворот X aka крен
+            var theta = euler.Gamma.Degrees;
+
+            // Поворот Y aka дифферент
+            var psi = euler.Beta.Degrees;
+
+            // Поворот Z aka рыскание
+            var phi = euler.Alpha.Degrees;
+
+            Console.WriteLine();
+            Console.WriteLine($"Рыскание: {phi:0.000}; Дифферент: {psi:0.000}; Крен: {theta:0.000}");
 
             Console.ReadKey();
         }
